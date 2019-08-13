@@ -8,8 +8,7 @@ import org.apache.spark.streaming.kafka010._
 
 object Main {
   def main(args: Array[String]): Unit = {
-
-    val Array(zkQuorum :String, topics :String, groupID :String) = args
+    val Array(zkQuorum, topics, groupID) = args
 
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> zkQuorum,
