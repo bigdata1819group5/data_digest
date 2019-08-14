@@ -30,10 +30,7 @@ object Main {
     )
 
     stream.map(record => (record.key, record.value))
-    stream.foreachRDD{
-     rdd =>
-      rdd.collect().foreach(println)
-     }
+
 
     streamingContext.start()             // Start the computation
     streamingContext.awaitTermination()  // Wait for the computation to terminate
