@@ -36,7 +36,7 @@ object Main {
 //    stream = stream.map(record => (record.key, record.value))
 //    stream.map(line => { val arr = line.key.split(","); (arr(0).toInt, arr(1)) }).saveToCassandra("sparkdata", "sparktable", SomeColumns("sno", "pname"))
     values.foreachRDD(rrd => {
-      rrd.saveToCassandra("sparkData", "vehicleLocation", SomeColumns("where"))
+      rrd.saveToCassandra("sparkData", "vehicleLocation", SomeColumns("location"))
     })
 
     streamingContext.start()             // Start the computation
