@@ -33,8 +33,6 @@ object Main {
     )
 
     val values = stream.map(record => record.value())
-//    stream = stream.map(record => (record.key, record.value))
-//    stream.map(line => { val arr = line.key.split(","); (arr(0).toInt, arr(1)) }).saveToCassandra("sparkdata", "sparktable", SomeColumns("sno", "pname"))
     values.foreachRDD(rdd => {
       val crdd = rdd.map(value => Tuple1(value))
       crdd.saveToCassandra("sparkData", "vehicleLocation", SomeColumns("location"))
