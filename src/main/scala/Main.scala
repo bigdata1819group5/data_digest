@@ -1,14 +1,14 @@
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.log4j.Logger
 import org.apache.spark._
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka010.ConsumerStrategies.Subscribe
 import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010._
+import com.datastax.spark.connector._
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val Array(zkQuorum, topics, groupID) = args
+    val Array(zkQuorum, topics, groupID, cassandraHost) = args
 
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> zkQuorum,
@@ -19,7 +19,10 @@ object Main {
       "enable.auto.commit" -> (false: java.lang.Boolean)
     )
 
-    val conf = new SparkConf().setAppName("DigestData")
+    val conf = new SparkConf()
+      .setAppName("DigestData")
+      .set("spark.cassandra.connection.host", cassandraHost)
+
     val streamingContext = new StreamingContext(conf, Seconds(1))
     val topicArr = topics.split(",")
 
@@ -29,8 +32,12 @@ object Main {
       Subscribe[String, String](topicArr, kafkaParams)
     )
 
-    stream.map(record => (record.key, record.value))
-
+    val values = stream.map(record => record.value())
+//    stream = stream.map(record => (record.key, record.value))
+//    stream.map(line => { val arr = line.key.split(","); (arr(0).toInt, arr(1)) }).saveToCassandra("sparkdata", "sparktable", SomeColumns("sno", "pname"))
+    values.foreachRDD(rrd => {
+      rrd.saveToCassandra("sparkData", "vehicleLocation", SomeColumns("where"))
+    })
 
     streamingContext.start()             // Start the computation
     streamingContext.awaitTermination()  // Wait for the computation to terminate
