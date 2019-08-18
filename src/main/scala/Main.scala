@@ -32,7 +32,7 @@ object Main {
       Subscribe[String, String](topicArr, kafkaParams)
     ).map(record => record.value)
 
-    val serialized = stream.map(value => Model.create(value.split(",")))
+    val serialized = stream.map(value => Model.create(value))
 
     serialized.foreachRDD(rdd => {
       rdd.saveToCassandra("sparkdata", "detaillocation")

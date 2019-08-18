@@ -1,6 +1,7 @@
 object Model {
-  def create(args: Array[String]): Model = {
-    Model(args(0), args(1), args(2).toDouble, args(3).toDouble)
+  def create(args: String): Model = {
+    val splited = args.stripPrefix("\"").stripSuffix("\"").split(",")
+    Model(splited(0), splited(1), splited(2).toDouble, splited(3).toDouble)
   }
 }
 
