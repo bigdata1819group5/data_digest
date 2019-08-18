@@ -13,7 +13,7 @@ object Main {
     val kafkaParams = Map[String, Object](
       "bootstrap.servers" -> zkQuorum,
       "key.deserializer" -> classOf[StringDeserializer],
-      "value.deserializer" -> classOf[ModelDeserializer],
+      "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> groupID,
       "auto.offset.reset" -> "earliest",
       "enable.auto.commit" -> (false: java.lang.Boolean)
@@ -26,14 +26,15 @@ object Main {
     val streamingContext = new StreamingContext(conf, Seconds(1))
     val topicArr = topics.split(",")
 
-    val stream = KafkaUtils.createDirectStream[String, Model](
+    val stream = KafkaUtils.createDirectStream[String, String](
       streamingContext,
       PreferConsistent,
-      Subscribe[String, Model](topicArr, kafkaParams)
-    )
+      Subscribe[String, String](topicArr, kafkaParams)
+    ).map(record => record.value)
 
-    val values = stream.map(record => record.value)
-    values.foreachRDD(rdd => {
+    val serialized = stream.map(value => Model.create(value.split(",")))
+
+    serialized.foreachRDD(rdd => {
       rdd.saveToCassandra("sparkdata", "detaillocation")
     })
 

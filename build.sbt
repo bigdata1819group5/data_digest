@@ -13,7 +13,6 @@ libraryDependencies += "com.datastax.spark" %% "spark-cassandra-connector" % "2.
 libraryDependencies += "org.apache.spark" % "spark-streaming-kafka-0-10_2.11" % "2.4.1"
 libraryDependencies += "org.apache.spark" % "spark-sql-kafka-0-10_2.11" % "2.4.1"
 
-libraryDependencies += "de.ruedigermoeller" % "fst" % "2.57"
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", _*) => MergeStrategy.discard
