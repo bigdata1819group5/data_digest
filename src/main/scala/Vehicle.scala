@@ -1,6 +1,10 @@
 import tiler.TileCalc
+import java.util.Date
+import java.text.SimpleDateFormat
 
 object Vehicle {
+  val timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
   def create(args: String): Vehicle = {
     val splited = args.stripPrefix("\"").stripSuffix("\"").split(",")
     Vehicle(splited(0), splited(1), splited(2).toDouble, splited(3).toDouble)
@@ -8,7 +12,7 @@ object Vehicle {
   def makeTiled(vehicle: Vehicle): TiledVehicle = {
     TiledVehicle(
       vehicle.id,
-      vehicle.time,
+      timeFormat.parse(vehicle.time),
       vehicle.latitude,
       vehicle.longitude,
       TileCalc.convertLatLongToQuadKey(vehicle.latitude, vehicle.longitude)
@@ -26,8 +30,8 @@ case class Vehicle(
 
 case class TiledVehicle(
   id: String,
-  time: String,
+  time: Date,
   latitude: Double,
   longitude: Double,
-  quadKey: String
+  tile_id: String
 )

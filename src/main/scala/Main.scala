@@ -38,7 +38,7 @@ object Main {
     val tiled = serialized.map(v => Vehicle.makeTiled(v))
 
     tiled.foreachRDD(rdd => {
-      rdd.saveToCassandra("sparkdata", "detaillocation")
+      rdd.saveToCassandra("streaming", "vehicles_by_tileid")
     })
 
     streamingContext.start()             // Start the computation
