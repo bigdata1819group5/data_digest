@@ -6,6 +6,8 @@ import org.apache.spark.streaming.kafka010.LocationStrategies.PreferConsistent
 import org.apache.spark.streaming.kafka010._
 import com.datastax.spark.connector._
 
+import tiler.TileCalc
+
 object Main {
   def main(args: Array[String]): Unit = {
     val Array(zkQuorum, topics, groupID, cassandraHost) = args
@@ -16,7 +18,7 @@ object Main {
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> groupID,
       "auto.offset.reset" -> "earliest",
-      "enable.auto.commit" -> (false: java.lang.Boolean)
+      "enable.auto.commit" -> "false"
     )
 
     val conf = new SparkConf()
@@ -32,9 +34,10 @@ object Main {
       Subscribe[String, String](topicArr, kafkaParams)
     ).map(record => record.value)
 
-    val serialized = stream.map(value => Model.create(value))
+    val serialized = stream.map(value => Vehicle.create(value))
+    val tiled = serialized.map(v => Vehicle.makeTiled(v))
 
-    serialized.foreachRDD(rdd => {
+    tiled.foreachRDD(rdd => {
       rdd.saveToCassandra("sparkdata", "detaillocation")
     })
 
