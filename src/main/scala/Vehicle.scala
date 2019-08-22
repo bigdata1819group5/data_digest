@@ -1,5 +1,5 @@
 import tiler.TileCalc
-import java.util.Date
+import java.util.{Date, Calendar}
 import java.text.SimpleDateFormat
 
 object Vehicle {
@@ -13,10 +13,21 @@ object Vehicle {
     TiledVehicle(
       vehicle.id,
       timeFormat.parse(vehicle.time),
+      convertToTimeID(vehicle.time),
       vehicle.latitude,
       vehicle.longitude,
       TileCalc.convertLatLongToQuadKey(vehicle.latitude, vehicle.longitude)
     )
+  }
+
+  def convertToTimeID(dateString: String): Date = {
+    val time = timeFormat.parse(dateString)
+    val calendar = Calendar.getInstance()
+    calendar.setTime(time)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    calendar.getTime()
   }
 }
 
@@ -31,6 +42,7 @@ case class Vehicle(
 case class TiledVehicle(
   id: String,
   time: Date,
+  time_id: Date,
   latitude: Double,
   longitude: Double,
   tile_id: String
