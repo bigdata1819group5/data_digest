@@ -14,10 +14,15 @@ object Main {
     val tiled = serialized.map(v => Vehicle.makeTiled(v))
 
     val keyspace = Properties.envOrElse("DIGEST_CASSANDRA_KEYSPACE", "streaming")
-    val table = Properties.envOrElse("DIGEST_CASSANDRA_TABLE", "vehicles_by_tileid")
+    val tileTable = Properties.envOrElse("DIGEST_CASSANDRA_TILE_TABLE", "vehicles_by_tileid")
+    val vehicleTable = Properties.envOrElse("DIGEST_CASSANDRA_VEHICLE_TABLE", "vehicles")
+
+    serialized.foreachRDD(rdd => {
+      rdd.saveToCassandra(keyspace, vehicleTable)
+    })
 
     tiled.foreachRDD(rdd => {
-      rdd.saveToCassandra(keyspace, table)
+      rdd.saveToCassandra(keyspace, tileTable)
     })
 
     Factory.start(streamingContext)
