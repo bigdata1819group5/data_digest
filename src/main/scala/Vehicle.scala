@@ -7,11 +7,12 @@ object Vehicle {
 
   def create(args: String): Vehicle = {
     val splited = args.stripPrefix("\"").stripSuffix("\"").split(",")
-    Vehicle(splited(0), splited(1), splited(2).toDouble, splited(3).toDouble)
+    Vehicle(splited(0), splited(1), splited(2), splited(3).toDouble, splited(4).toDouble)
   }
   def makeTiled(vehicle: Vehicle): TiledVehicle = {
     TiledVehicle(
       vehicle.id,
+      vehicle.company_id,
       timeFormat.parse(vehicle.time),
       convertToTimeID(vehicle.time),
       vehicle.latitude,
@@ -34,6 +35,7 @@ object Vehicle {
 
 case class Vehicle(
   id: String,
+  company_id: String,
   time: String,
   latitude: Double,
   longitude: Double
@@ -41,6 +43,7 @@ case class Vehicle(
 
 case class TiledVehicle(
   id: String,
+  company_id: String,
   time: Date,
   time_id: Date,
   latitude: Double,
