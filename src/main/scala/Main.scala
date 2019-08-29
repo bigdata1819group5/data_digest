@@ -21,7 +21,8 @@ object Main {
       rdd.saveToCassandra(keyspace, vehicleTable)
     })
 
-    tiled.map(v => ((v.id, v.time), v)).saveAsHadoopFiles(hdfsMaster + "/tiled_vehicle", "txt")
+    serialized.map(v => ((v.id, v.time), (v.latitude, v.longitude, v.company_id)))
+      .saveAsHadoopFiles(hdfsMaster + "/tiled_vehicle", "txt")
 
     tiled.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, tileTable)
