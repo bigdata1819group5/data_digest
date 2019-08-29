@@ -9,7 +9,7 @@ object Main {
     val stream = Factory.createStream(streamingContext)
       .map(record => record.value)
 
-
+    val hdfsMaster = Properties.envOrElse("DIGEST_HADOOP_NAMENODE", "hdfs://namenode:8020")
     val serialized = stream.map(value => Vehicle.create(value))
     val tiled = serialized.map(v => Vehicle.makeTiled(v))
 
@@ -20,6 +20,8 @@ object Main {
     serialized.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, vehicleTable)
     })
+
+    tiled.map(v => ((v.id, v.time), v)).saveAsHadoopFiles(hdfsMaster + "/tiled_vehicle", "txt")
 
     tiled.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, tileTable)
