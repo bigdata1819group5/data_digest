@@ -22,7 +22,7 @@ object Main {
     })
 
     stream.foreachRDD(rdd => {
-      if(!rdd.partitions.isEmpty)
+      if(!rdd.isEmpty)
         rdd.saveAsTextFile(hdfsMaster + "/user/spark/vehiclelocation/data_" + System.currentTimeMillis)
     })
 
