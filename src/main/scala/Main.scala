@@ -24,7 +24,7 @@ object Main {
     })
 
     stream.map(v => (v.stripPrefix("\"").stripSuffix("\"").split(",")(0), v))
-      .saveAsHadoopFiles(hdfsMaster + "/tiled_vehicle", "txt", classOf[Text], classOf[Text], classOf[TextOutputFormat[String, String]])
+      .saveAsHadoopFiles(hdfsMaster + "/vehiclelocation/data", "txt", classOf[Text], classOf[Text], classOf[TextOutputFormat[String, String]])
 
     tiled.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, tileTable)
