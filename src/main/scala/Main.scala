@@ -1,8 +1,6 @@
 import scala.util.Properties
 
 import com.datastax.spark.connector._
-import org.apache.hadoop.io.Text
-import org.apache.hadoop.mapred.TextOutputFormat
 
 object Main {
   def main(args: Array[String]): Unit = {
@@ -23,8 +21,9 @@ object Main {
       rdd.saveToCassandra(keyspace, vehicleTable)
     })
 
-    stream.map(v => (v.stripPrefix("\"").stripSuffix("\"").split(",")(0), v))
-      .saveAsHadoopFiles(hdfsMaster + "/vehiclelocation/data", "txt", classOf[Text], classOf[Text], classOf[TextOutputFormat[String, String]])
+    stream.foreachRDD(rdd => {
+          rdd.saveAsTextFile(hdfsMaster + "/user/spark/vehiclelocation/data_" + System.currentTimeMillis)
+    })
 
     tiled.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, tileTable)
