@@ -14,7 +14,7 @@ object Factory {
     val conf = new SparkConf()
       .setAppName(Properties.envOrElse("DIGEST_APP_NAME", "DigestData"))
       .set("spark.cassandra.connection.host", Properties.envOrElse("DIGEST_CASSANDRA_HOST", "cassandra:7000"))
-
+      .set("spark.cores.max", Properties.envOrElse("DIGEST_CORES_MAX", "8"))
     new StreamingContext(conf, Seconds(1))
   }
 
