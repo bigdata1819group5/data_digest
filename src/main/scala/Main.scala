@@ -9,7 +9,6 @@ object Main {
     val stream = Factory.createStream(streamingContext)
       .map(record => record.value)
 
-    val hdfsMaster = Properties.envOrElse("DIGEST_HADOOP_NAMENODE", "hdfs://namenode:8020")
     val serialized = stream.map(value => Vehicle.create(value))
     val tiled = serialized.map(v => Vehicle.makeTiled(v))
 
@@ -19,11 +18,6 @@ object Main {
 
     serialized.foreachRDD(rdd => {
       rdd.saveToCassandra(keyspace, vehicleTable)
-    })
-
-    stream.foreachRDD(rdd => {
-      if(!rdd.isEmpty)
-        rdd.saveAsTextFile(hdfsMaster + "/user/spark/vehiclelocation/data_" + System.currentTimeMillis)
     })
 
     tiled.foreachRDD(rdd => {
